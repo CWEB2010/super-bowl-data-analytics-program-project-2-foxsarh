@@ -14,19 +14,21 @@ namespace Project_Two
             **/
 
             //Declarations//
-            const string PATH = @"C: \Users\foxsarh\OneDrive - Dunwoody College of Technology\Freshman Yr\Advanced_Programming\Project 2\Super_Bowl_Project.csv";
+            const string PATH = @"C:\Users\foxsarh\Documents\Super_Bowl_Project.csv";
 
-            FileStream input;
+            FileStream infile;
+            FileStream outfile;
             StreamReader read;
+            StreamWriter write;
             string primer;
             string[] superBowlData;
             List<SuperBowl> superbowlList = null; //Need an empty list to start so I can fill it with the data from the CSV file
 
             try
             {
-                input = new FileStream(PATH, FileMode.Open, FileAccess.Read);
-                read = new StreamReader(input);
-                //primer = read.ReadLine(); <-- is this redundant? 
+                infile = new FileStream(PATH, FileMode.Open, FileAccess.Read);
+                read = new StreamReader(infile);
+                primer = read.ReadLine(); //<-- is this redundant? 
                 superbowlList = new List<SuperBowl>();
 
 
@@ -39,31 +41,67 @@ namespace Project_Two
                         Convert.ToInt32(superBowlData[10]), superBowlData[11], superBowlData[12], superBowlData[13], superBowlData[14]));
 
                     primer = read.ReadLine(); //primer
+                }// end of while loop
+
+                Console.WriteLine("Below is a List of All Super Bowl Winners");
+                //superbowlList.ForEach(x => Console.WriteLine(x.outputWinner));
+                foreach (SuperBowl x in superbowlList)
+                {
+                    Console.WriteLine(x.outputWinner());
                 }
+
+                //Generate a list of players who won MVP more than once
+                var MVPCount = from x in superbowlList // <-- why does this only work with Var and not IEnumerable ??
+                               group x by x.MVP into MVPGroup //create a group of the MVP data so it can be counted/quantified
+                               where MVPGroup.Count() > 1
+                               orderby MVPGroup.Key // Order the list according to # of times a player was MVP
+                               select MVPGroup.ToList(); // Return the ordered list of MVPs in List format  
+
+
+                //write.Close();
+                read.Close();
+                infile.Close();
 
             }// end of try
 
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }// end of catch
 
-        }
+
+            ////write to a file
+            //FileStream outFile = new
+            //   FileStream("SomeText.txt", FileMode.Create,
+            //   FileAccess.Write);
+            //StreamWriter writer = new StreamWriter(outFile);
+            //Console.Write("Enter some text >> ");
+            //string text = Console.ReadLine();
+            //writer.WriteLine(text);
+            //// Error occurs if the next two statements are reversed
+            //writer.Close();
+            //outFile.Close();
+
+        }// End of Main
     }//End of Program Class
 
-    class SuperBowl
+    public class SuperBowl
     {
-        string Date;
-        string SuperBowlNumber;
-        int Attendance;
-        string QBWinner;
-        string CoachWinner;
-        string Winner;
-        int WinningPoints;
-        string QBLoser;
-        string CoachLoser;
-        string Loser;
-        int LosingPoints;
-        string MVP;
-        string Stadium;
-        string City;
-        string State;
+        public string Date;
+        public string SuperBowlNumber;
+        public int Attendance;
+        public string QBWinner;
+        public string CoachWinner;
+        public string Winner;
+        public int WinningPoints;
+        public string QBLoser;
+        public string CoachLoser;
+        public string Loser;
+        public int LosingPoints;
+        public string MVP;
+        public string Stadium;
+        public string City;
+        public string State;
 
         public SuperBowl (string Date, string SuperBowlNumber, int Attendance, string QBWinner, string CoachWinner, string Winner,
             int WinningPts, string QBLoser, string CoachLoser, string Loser, int LosingPts, string MVP, string Stadium, string City, string State)
@@ -84,6 +122,12 @@ namespace Project_Two
             this.City = City;
             this.State = State;          
         }
+
+        public string outputWinner()
+        {
+            return String.Format($"1. Team Name = {Winner}\n2. Date Won = {Date}\n3. Winning Quarterback = {QBWinner}" +
+                $"\n4. Winning Coach = {CoachWinner}\n5. MVP = {MVP}\n6. Point Difference = {WinningPoints - LosingPoints}\n\n");
+        } 
     }
 
 

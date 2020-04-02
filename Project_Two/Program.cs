@@ -51,6 +51,13 @@ namespace Project_Two
                     Console.WriteLine(x.outputWinner());
                 }
 
+                //Generate a list of top 5 most attendance superbowls
+                var attendanceQuery = from superbowl in superbowlList
+                                      group superbowl by superbowl.Attendance into attendanceGroup
+                                      select attendanceGroup;
+                                        // HOW DO I DO THE MATH HERE FOR TOP 5...?
+
+
                 //Generate a list of players who won MVP more than once
                 var MVPCount = from x in superbowlList // <-- why does this only work with Var and not IEnumerable ??
                                group x by x.MVP into MVPGroup //create a group of the MVP data so it can be counted/quantified
@@ -139,7 +146,14 @@ namespace Project_Two
             return String.Format($"1. Team Name = {Winner}\n2. Date Won = {Date}\n3. Winning Quarterback = {QBWinner}" +
                 $"\n4. Winning Coach = {CoachWinner}\n5. MVP = {MVP}\n6. Point Difference = {WinningPoints - LosingPoints}\n\n");
         } 
+
+        public string outputTopFive()
+        {
+            return String.Format($"1. Date = {Date}\n2. Winning Team = {Winner}\n3. Losing Team = {Loser}" +
+                $"\n4. City = {City}\n5. State = {State}\n6. Stadium = {Stadium}\n\n");
+        }
     }
+
 
 
 }

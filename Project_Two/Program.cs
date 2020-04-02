@@ -45,15 +45,22 @@ namespace Project_Two
                     primer = read.ReadLine(); //primer
                 }// end of while loop
 
+                read.Dispose();
+                infile.Dispose();
+
                 Console.WriteLine("Below is a List of All Super Bowl Winners");
                 //superbowlList.ForEach(x => Console.WriteLine(x.Winner));
-                outputData(superbowlList, "attendance");
+                foreach (SuperBowl x in superbowlList)
+                {
+                    Console.WriteLine(x.outputWinner());
+                }
 
                 //Generate a list of top 5 most attendance superbowls
                 var attendanceQuery = (from superbowl in superbowlList
                                        orderby superbowl.Attendance descending
                                        select superbowl).ToList<SuperBowl>().Take(5);
 
+                Console.WriteLine("Below is a List of The Top 5 Most Attended Superbowls");
                 attendanceQuery.ToList<SuperBowl>().ForEach(x => Console.WriteLine(x.Attendance));
 
                 //Generate a list of players who won MVP more than once
@@ -65,23 +72,23 @@ namespace Project_Two
 
                 //Testing to see if above ^ code works
                 //MVPCount.ToList<SuperBowl>().ForEach(x => Console.WriteLine(x.MVP));
+                Console.WriteLine("Below are the Players Who Have Won MVP More Than Once");
                 foreach (var x in MVPCount)
                 {
-                    Console.WriteLine("MVP Group " + x.Key + ":");
+                    Console.WriteLine($"1. Name = {x.Key}");
                     foreach(var superbowl in x)
                     {
-                        Console.WriteLine($"1. Name = {superbowl.MVP}\n2. Winning Team = {superbowl.Winner}\n3. Losing Team = {superbowl.Loser}\n\n");
+                        Console.WriteLine($"2. Winning Team = {superbowl.Winner}\n3. Losing Team = {superbowl.Loser}\n\n");
                     }
                     
                 }
 
                 //var MVPCount = superbowlList.Where<SuperBowl>(x => x.MVP.Count() > 2).Select(x => x).ToList();
-                //Console.WriteLine("Below are the Players Who Have Won MVP More Than Once");
                 //MVPCount.ForEach(x => Console.WriteLine($"1. Name = {x.MVP}\n2. Winning Team = {x.Winner}\n3. Losing Team = {x.Loser}\n\n"));
 
                 //write.Close();
-                read.Close();
-                infile.Close();
+                //read.Close();
+                //infile.Close();
 
             }// end of try
 
@@ -107,23 +114,23 @@ namespace Project_Two
 
 
         //method that outputs data
-        public static void outputData(List<SuperBowl> data, string determinant)
-        {
-            if (determinant == "attendance")
-            {
-                foreach (SuperBowl x in data)
-                {
-                    Console.WriteLine(x.outputWinner());
-                }
-            }else if(determinant == "allWinners")
-            {
+        //public static void outputData(List<SuperBowl> data, string determinant)
+        //{
+        //    if (determinant == "allWinners")
+        //    {
+        //        foreach (SuperBowl x in data)
+        //        {
+        //            Console.WriteLine(x.outputWinner());
+        //        }
+        //    }else if(determinant == "attendance")
+        //    {
 
-            }
-            else
-            {
-                Console.WriteLine("Something went wrong");
-            }
-        }
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine("Something went wrong");
+        //    }
+        //}
     }//End of Program Class
 
     public class SuperBowl

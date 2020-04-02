@@ -22,16 +22,14 @@ namespace Project_Two
             StreamWriter write;
             string primer;
             string[] superBowlData;
-            List<SuperBowl> superbowlList = null; //Need an empty list to start so I can fill it with the data from the CSV file
-            //this list isn't filled with data unless all exceptions are handled 
 
             //*** add two more modules inside of main method ***/// 
             try
             {
                 infile = new FileStream(PATH, FileMode.Open, FileAccess.Read);
                 read = new StreamReader(infile);
-                primer = read.ReadLine(); //<-- is this redundant? 
-                superbowlList = new List<SuperBowl>();
+                primer = read.ReadLine(); // primer 
+                List<SuperBowl>superbowlList = new List<SuperBowl>();
 
 
                 //Looping structure to read in all columns from CSV
@@ -41,28 +39,30 @@ namespace Project_Two
                     superbowlList.Add(new SuperBowl(superBowlData[0], superBowlData[1], Convert.ToInt32(superBowlData[2]), superBowlData[3],
                         superBowlData[4], superBowlData[5], Convert.ToInt32(superBowlData[6]), superBowlData[7], superBowlData[8], superBowlData[9],
                         Convert.ToInt32(superBowlData[10]), superBowlData[11], superBowlData[12], superBowlData[13], superBowlData[14]));
-
-                    primer = read.ReadLine(); //primer
+ 
                 }// end of while loop
 
                 read.Dispose();
                 infile.Dispose();
 
+                Console.WriteLine("-------------------------------------------------------");
                 Console.WriteLine("Below is a List of All Super Bowl Winners");
+                Console.WriteLine("------------------------------------------");
                 //superbowlList.ForEach(x => Console.WriteLine(x.Winner));
-                foreach (SuperBowl x in superbowlList)
-                {
-                    Console.WriteLine(x.outputWinner());
-                }
+                outputData(superbowlList, "allWinners");
 
                 //Generate a list of top 5 most attendance superbowls
                 var attendanceQuery = (from superbowl in superbowlList
                                        orderby superbowl.Attendance descending
                                        select superbowl).ToList<SuperBowl>().Take(5);
 
+                Console.WriteLine("-------------------------------------------------------");
                 Console.WriteLine("Below is a List of The Top 5 Most Attended Superbowls");
-                attendanceQuery.ToList<SuperBowl>().ForEach(x => Console.WriteLine(x.Attendance));
+                Console.WriteLine("-------------------------------------------------------");
+                attendanceQuery.ToList<SuperBowl>().ForEach(x => Console.WriteLine($"1. Date = {x.Date}\n2. Winning Team = {x.Winner}\n3. Losing Team = {x.Loser}" +
+                $"\n4. City = {x.City}\n5. State = {x.State}\n6. Stadium = {x.Stadium}\n\n"));
 
+                /** Code originally by Leann Simonson **/
                 //Generate a list of players who won MVP more than once
                 var MVPCount = from x in superbowlList // <-- why does this only work with Var and not IEnumerable ??
                                group x by x.MVP into MVPGroup //create a group of the MVP data so it can be counted/quantified
@@ -70,18 +70,22 @@ namespace Project_Two
                                orderby MVPGroup.Key // Order the list according to # of times a player was MVP
                                select MVPGroup; // Return the ordered list of MVPs in List format  
 
-                //Testing to see if above ^ code works
                 //MVPCount.ToList<SuperBowl>().ForEach(x => Console.WriteLine(x.MVP));
+                Console.WriteLine("------------------------------------------------------");
                 Console.WriteLine("Below are the Players Who Have Won MVP More Than Once");
+                Console.WriteLine("------------------------------------------------------\n");
                 foreach (var x in MVPCount)
                 {
-                    Console.WriteLine($"1. Name = {x.Key}");
-                    foreach(var superbowl in x)
+                    Console.WriteLine($"\nPlayer {x.Key} won MVP {x.Count()} times");
+                    Console.WriteLine("--------------------------------");
+
+                    foreach (var superbowl in x)
                     {
-                        Console.WriteLine($"2. Winning Team = {superbowl.Winner}\n3. Losing Team = {superbowl.Loser}\n\n");
+                        Console.WriteLine($"Winning Team = {superbowl.Winner}\nLosing Team = {superbowl.Loser}\n");
                     }
                     
                 }
+                Console.WriteLine(""); //formatting
 
                 //var MVPCount = superbowlList.Where<SuperBowl>(x => x.MVP.Count() > 2).Select(x => x).ToList();
                 //MVPCount.ForEach(x => Console.WriteLine($"1. Name = {x.MVP}\n2. Winning Team = {x.Winner}\n3. Losing Team = {x.Loser}\n\n"));
@@ -114,23 +118,24 @@ namespace Project_Two
 
 
         //method that outputs data
-        //public static void outputData(List<SuperBowl> data, string determinant)
-        //{
-        //    if (determinant == "allWinners")
-        //    {
-        //        foreach (SuperBowl x in data)
-        //        {
-        //            Console.WriteLine(x.outputWinner());
-        //        }
-        //    }else if(determinant == "attendance")
-        //    {
+        public static void outputData(List<SuperBowl> data, string determinant)
+        {
+            if (determinant == "allWinners")
+            {
+                foreach (SuperBowl x in data)
+                {
+                    Console.WriteLine(x.outputWinner());
+                }
+            }
+            else if (determinant == "attendance")
+            {
 
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine("Something went wrong");
-        //    }
-        //}
+            }
+            else
+            {
+                Console.WriteLine("Something went wrong");
+            }
+        }
     }//End of Program Class
 
     public class SuperBowl

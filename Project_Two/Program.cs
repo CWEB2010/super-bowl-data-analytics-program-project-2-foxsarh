@@ -23,6 +23,7 @@ namespace Project_Two
             string primer;
             string[] superBowlData;
             List<SuperBowl> superbowlList = null; //Need an empty list to start so I can fill it with the data from the CSV file
+            //this list isn't filled with data unless all exceptions are handled 
 
             try
             {
@@ -44,7 +45,7 @@ namespace Project_Two
                 }// end of while loop
 
                 Console.WriteLine("Below is a List of All Super Bowl Winners");
-                //superbowlList.ForEach(x => Console.WriteLine(x.outputWinner));
+                //superbowlList.ForEach(x => Console.WriteLine(x.Winner));
                 foreach (SuperBowl x in superbowlList)
                 {
                     Console.WriteLine(x.outputWinner());
@@ -55,8 +56,18 @@ namespace Project_Two
                                group x by x.MVP into MVPGroup //create a group of the MVP data so it can be counted/quantified
                                where MVPGroup.Count() > 1
                                orderby MVPGroup.Key // Order the list according to # of times a player was MVP
-                               select MVPGroup.ToList(); // Return the ordered list of MVPs in List format  
+                               select MVPGroup; // Return the ordered list of MVPs in List format  
 
+                //Testing to see if above ^ code works
+                //MVPCount.ToList<SuperBowl>().ForEach(x => Console.WriteLine(x.MVP));
+                foreach (SuperBowl x in MVPCount)
+                {
+                    Console.WriteLine($"1. Name = {x.MVP}\n2. Winning Team = {x.Winner}\n3. Losing Team = {x.Loser}\n\n");
+                }
+
+                //var MVPCount = superbowlList.Where<SuperBowl>(x => x.MVP.Count() > 2).Select(x => x).ToList();
+                //Console.WriteLine("Below are the Players Who Have Won MVP More Than Once");
+                //MVPCount.ForEach(x => Console.WriteLine($"1. Name = {x.MVP}\n2. Winning Team = {x.Winner}\n3. Losing Team = {x.Loser}\n\n"));
 
                 //write.Close();
                 read.Close();

@@ -25,6 +25,7 @@ namespace Project_Two
             List<SuperBowl> superbowlList = null; //Need an empty list to start so I can fill it with the data from the CSV file
             //this list isn't filled with data unless all exceptions are handled 
 
+            //*** add two more modules inside of main method ***/// 
             try
             {
                 infile = new FileStream(PATH, FileMode.Open, FileAccess.Read);
@@ -46,17 +47,14 @@ namespace Project_Two
 
                 Console.WriteLine("Below is a List of All Super Bowl Winners");
                 //superbowlList.ForEach(x => Console.WriteLine(x.Winner));
-                foreach (SuperBowl x in superbowlList)
-                {
-                    Console.WriteLine(x.outputWinner());
-                }
+                outputData(superbowlList, "attendance");
 
                 //Generate a list of top 5 most attendance superbowls
-                var attendanceQuery = from superbowl in superbowlList
-                                      group superbowl by superbowl.Attendance into attendanceGroup
-                                      select attendanceGroup;
-                                        // HOW DO I DO THE MATH HERE FOR TOP 5...?
+                var attendanceQuery = (from superbowl in superbowlList
+                                       orderby superbowl.Attendance descending
+                                       select superbowl).ToList<SuperBowl>().Take(5);
 
+                attendanceQuery.ToList<SuperBowl>().ForEach(x => Console.WriteLine(x.Attendance));
 
                 //Generate a list of players who won MVP more than once
                 var MVPCount = from x in superbowlList // <-- why does this only work with Var and not IEnumerable ??
@@ -67,9 +65,14 @@ namespace Project_Two
 
                 //Testing to see if above ^ code works
                 //MVPCount.ToList<SuperBowl>().ForEach(x => Console.WriteLine(x.MVP));
-                foreach (SuperBowl x in MVPCount)
+                foreach (var x in MVPCount)
                 {
-                    Console.WriteLine($"1. Name = {x.MVP}\n2. Winning Team = {x.Winner}\n3. Losing Team = {x.Loser}\n\n");
+                    Console.WriteLine("MVP Group " + x.Key + ":");
+                    foreach(var superbowl in x)
+                    {
+                        Console.WriteLine($"1. Name = {superbowl.MVP}\n2. Winning Team = {superbowl.Winner}\n3. Losing Team = {superbowl.Loser}\n\n");
+                    }
+                    
                 }
 
                 //var MVPCount = superbowlList.Where<SuperBowl>(x => x.MVP.Count() > 2).Select(x => x).ToList();
@@ -101,6 +104,26 @@ namespace Project_Two
             //outFile.Close();
 
         }// End of Main
+
+
+        //method that outputs data
+        public static void outputData(List<SuperBowl> data, string determinant)
+        {
+            if (determinant == "attendance")
+            {
+                foreach (SuperBowl x in data)
+                {
+                    Console.WriteLine(x.outputWinner());
+                }
+            }else if(determinant == "allWinners")
+            {
+
+            }
+            else
+            {
+                Console.WriteLine("Something went wrong");
+            }
+        }
     }//End of Program Class
 
     public class SuperBowl

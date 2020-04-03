@@ -45,10 +45,8 @@ namespace Project_Two
                 read.Dispose();
                 infile.Dispose();
 
-                Console.WriteLine("-------------------------------------------------------");
-                Console.WriteLine("Below is a List of All Super Bowl Winners");
-                Console.WriteLine("------------------------------------------");
-                //superbowlList.ForEach(x => Console.WriteLine(x.Winner));
+                //Print winners to console
+                formatting("Winners");
                 outputData(superbowlList, "allWinners");
 
                 //Generate a list of top 5 most attendance superbowls
@@ -56,24 +54,36 @@ namespace Project_Two
                                        orderby superbowl.Attendance descending
                                        select superbowl).ToList<SuperBowl>().Take(5);
 
-                Console.WriteLine("-------------------------------------------------------");
-                Console.WriteLine("Below is a List of The Top 5 Most Attended Superbowls");
-                Console.WriteLine("-------------------------------------------------------");
+                //Print Top Five to console
+                formatting("Top Five");
                 attendanceQuery.ToList<SuperBowl>().ForEach(x => Console.WriteLine($"1. Date = {x.Date}\n2. Winning Team = {x.Winner}\n3. Losing Team = {x.Loser}" +
                 $"\n4. City = {x.City}\n5. State = {x.State}\n6. Stadium = {x.Stadium}\n\n"));
 
-                /** Code originally by Leann Simonson **/
+                //Generate a list of the state that hosted the most super bowls
+                var stateQuery = (from SB in superbowlList
+                                  group SB by SB.State into stateGroup
+                                  where stateGroup.Count() > 1
+                                  orderby stateGroup.Key descending
+                                  select stateGroup).Take(1);
+
+                formatting("State");
+                foreach (var x in stateQuery)
+                {
+                    foreach (var superbowl in x)
+                    {
+                        Console.WriteLine($"1. The city = {superbowl.City}\n2. The State = {superbowl.State}\n3. The Stadium = {superbowl.Stadium}\n\n");
+                    }
+                }
+
+                /** Adapted from code originally by Leann Simonson **/
                 //Generate a list of players who won MVP more than once
-                var MVPCount = from x in superbowlList // <-- why does this only work with Var and not IEnumerable ??
+                var MVPCount = from x in superbowlList 
                                group x by x.MVP into MVPGroup //create a group of the MVP data so it can be counted/quantified
                                where MVPGroup.Count() > 1
                                orderby MVPGroup.Key // Order the list according to # of times a player was MVP
                                select MVPGroup; // Return the ordered list of MVPs in List format  
 
-                //MVPCount.ToList<SuperBowl>().ForEach(x => Console.WriteLine(x.MVP));
-                Console.WriteLine("------------------------------------------------------");
-                Console.WriteLine("Below are the Players Who Have Won MVP More Than Once");
-                Console.WriteLine("------------------------------------------------------\n");
+                formatting("MVP");
                 foreach (var x in MVPCount)
                 {
                     Console.WriteLine($"\nPlayer {x.Key} won MVP {x.Count()} times");
@@ -86,9 +96,6 @@ namespace Project_Two
                     
                 }
                 Console.WriteLine(""); //formatting
-
-                //var MVPCount = superbowlList.Where<SuperBowl>(x => x.MVP.Count() > 2).Select(x => x).ToList();
-                //MVPCount.ForEach(x => Console.WriteLine($"1. Name = {x.MVP}\n2. Winning Team = {x.Winner}\n3. Losing Team = {x.Loser}\n\n"));
 
                 //write.Close();
                 //read.Close();
@@ -135,6 +142,32 @@ namespace Project_Two
             {
                 Console.WriteLine("Something went wrong");
             }
+        }
+
+        public static void formatting(string header)
+        {
+            Console.WriteLine("------------------------------------------------------");
+            if (header == "Winners")
+            {
+                Console.WriteLine("Below is a List of All Super Bowl Winners");
+            } 
+            
+            else if (header == "Top Five")
+            {
+                Console.WriteLine("Below is a List of The Top 5 Most Attended Superbowls");
+            }
+
+            else if (header == "State")
+            {
+                Console.WriteLine("Below is the State that Hosted the Most Superbowls");
+            }
+
+            else if (header == "MVP")
+            {
+                Console.WriteLine("Below are the Players Who Have Won MVP More Than Once");
+            }
+
+            Console.WriteLine("------------------------------------------------------\n");
         }
     }//End of Program Class
 

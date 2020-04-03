@@ -97,6 +97,73 @@ namespace Project_Two
                 }
                 Console.WriteLine(""); //formatting
 
+                Console.WriteLine("----------------");
+                Console.WriteLine(" Misc Fun Facts ");
+                Console.WriteLine("----------------");
+                //Determine which coach lost the most superbowls
+                var losingCoachQuery = (from SB in superbowlList
+                                        group SB by SB.CoachLoser into losingCoachGroup
+                                        where losingCoachGroup.Count() > 1
+                                        orderby losingCoachGroup.Key descending
+                                        select losingCoachGroup).Take(1);
+
+                
+                foreach (var x in losingCoachQuery)
+                {
+                    Console.WriteLine($"The coach who lost the most Super Bowls = {x.Key}");
+                }
+
+                //determine which coach won the most superbowls
+                var winningCoachQuery = (from SB in superbowlList
+                                         group SB by SB.CoachWinner into winningCoachGroup
+                                         where winningCoachGroup.Count() > 1
+                                         orderby winningCoachGroup.Key descending
+                                         select winningCoachGroup).Take(1);
+
+                foreach (var x in winningCoachQuery)
+                {
+                    Console.WriteLine($"The coach who won the most super bowls = {x.Key}");
+                }
+
+                //Determine which team(s) won the most superbowls
+                var winningTeam = (from SB in superbowlList
+                                   group SB by SB.Winner into winnerGroup
+                                   where winnerGroup.Count() > 1
+                                   orderby winnerGroup.Key descending
+                                   select winnerGroup).Take(1);
+
+                foreach (var x in winningTeam)
+                {
+                    Console.WriteLine($"The team who won the most Super Bowls = {x.Key}");
+                }
+
+                //Determine which team(s) lost the most superbowls
+                var losingTeam = (from SB in superbowlList
+                                  group SB by SB.Loser into loserGroup
+                                  where loserGroup.Count() > 1
+                                  orderby loserGroup.Key descending
+                                  select loserGroup).Take(1);
+                
+                foreach (var x in losingTeam)
+                {
+                    Console.WriteLine($"The team who lost the most Super Bowls = {x.Key}");
+                }
+
+                //Determine which Superbowl had the greatest point difference
+                var greatestPoint = (from SB in superbowlList
+                                     group SB by SB.pointDifference() into pointsGroup
+                                     where pointsGroup.Count() > 1
+                                     orderby pointsGroup.Key descending
+                                     select pointsGroup).Take(1);
+
+                foreach (var x in greatestPoint)
+                {
+                    foreach (var sb in x)
+                    {
+                        Console.WriteLine($"The Super Bowl with the greatest point difference = {sb.SuperBowlNumber}");
+                    }
+                }
+
                 //write.Close();
                 //read.Close();
                 //infile.Close();
@@ -220,6 +287,12 @@ namespace Project_Two
             return String.Format($"1. Date = {Date}\n2. Winning Team = {Winner}\n3. Losing Team = {Loser}" +
                 $"\n4. City = {City}\n5. State = {State}\n6. Stadium = {Stadium}\n\n");
         }
+
+        public int pointDifference()
+        {
+            return (WinningPoints - LosingPoints);
+        }
+
     }
 
 

@@ -125,17 +125,21 @@ namespace Project_Two
                     Console.WriteLine($"The coach who won the most super bowls = {x.Key}");
                 }
 
+                int mostWins = superbowlList.GroupBy(x => x.Winner).OrderByDescending(x => x.Count()).First().Count();
                 //Determine which team(s) won the most superbowls
                 var winningTeam = (from SB in superbowlList
                                    group SB by SB.Winner into winnerGroup
-                                   where winnerGroup.Count() > 1
-                                   orderby winnerGroup.Key descending
-                                   select winnerGroup).Take(1);
+                                   where winnerGroup.Count() == mostWins
+                                   //orderby winnerGroup.Key descending
+                                   select winnerGroup.Key).ToArray();
 
-                foreach (var x in winningTeam)
+                Console.Write("The team who won the most Super Bowls = ");
+                for (var x=0; x < winningTeam.Length; x++)
                 {
-                    Console.WriteLine($"The team who won the most Super Bowls = {x.Key}");
+                    Console.Write($"{winningTeam[x]}\t");
                 }
+                //Formatting
+                Console.WriteLine("");
 
                 //Determine which team(s) lost the most superbowls
                 var losingTeam = (from SB in superbowlList
@@ -152,7 +156,8 @@ namespace Project_Two
                 //Determine which Superbowl had the greatest point difference
                 var greatestPoint = (from SB in superbowlList
                                      group SB by SB.pointDifference() into pointsGroup
-                                     where pointsGroup.Count() > 1
+                                     where pointsGroup.Count() > 1 //need to nest another query here 
+                                                                    //1st 
                                      orderby pointsGroup.Key descending
                                      select pointsGroup).Take(1);
 

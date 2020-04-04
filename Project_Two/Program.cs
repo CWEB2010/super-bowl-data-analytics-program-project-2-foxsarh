@@ -125,54 +125,56 @@ namespace Project_Two
                     Console.WriteLine($"The coach who won the most super bowls = {x.Key}");
                 }
 
-                int mostWins = superbowlList.GroupBy(x => x.Winner).OrderByDescending(x => x.Count()).First().Count();
                 //Determine which team(s) won the most superbowls
+                int mostWins = superbowlList.GroupBy(x => x.Winner).OrderByDescending(x => x.Count()).First().Count();
                 var winningTeam = (from SB in superbowlList
                                    group SB by SB.Winner into winnerGroup
                                    where winnerGroup.Count() == mostWins
                                    //orderby winnerGroup.Key descending
                                    select winnerGroup.Key).ToArray();
 
-                Console.Write("The team who won the most Super Bowls = ");
+                Console.WriteLine("\nThe Teams Who Won the Most Super Bowls:");
                 for (var x=0; x < winningTeam.Length; x++)
                 {
-                    Console.Write($"{winningTeam[x]}\t");
+                    Console.WriteLine($"{winningTeam[x]}");
                 }
-                //Formatting
-                Console.WriteLine("");
 
                 //Determine which team(s) lost the most superbowls
+                int mostLosses = superbowlList.GroupBy(x => x.Loser).OrderByDescending(x => x.Count()).First().Count();
                 var losingTeam = (from SB in superbowlList
                                   group SB by SB.Loser into loserGroup
-                                  where loserGroup.Count() > 1
-                                  orderby loserGroup.Key descending
-                                  select loserGroup).Take(1);
-                
+                                  where loserGroup.Count() == mostLosses
+                                  //orderby loserGroup.Key descending
+                                  select loserGroup).Take(2);
+
+                Console.WriteLine("\nThe Teams Who Lost the Most Super Bowls:");
                 foreach (var x in losingTeam)
                 {
-                    Console.WriteLine($"The team who lost the most Super Bowls = {x.Key}");
+                    Console.WriteLine($"{x.Key}");
                 }
+
+                // DEBUGGING ----->> superbowlList.ForEach(x => Console.WriteLine(x.pointDifference()));
 
                 //Determine which Superbowl had the greatest point difference
                 var greatestPoint = (from SB in superbowlList
                                      group SB by SB.pointDifference() into pointsGroup
-                                     where pointsGroup.Count() > 1 //need to nest another query here 
-                                                                    //1st 
                                      orderby pointsGroup.Key descending
                                      select pointsGroup).Take(1);
 
+                Console.WriteLine(""); //formatting 
                 foreach (var x in greatestPoint)
                 {
                     foreach (var sb in x)
                     {
-                        Console.WriteLine($"The Super Bowl with the greatest point difference = {sb.SuperBowlNumber}");
+                        Console.WriteLine($"The Super Bowl with the greatest point difference:\n{sb.SuperBowlNumber} by {sb.pointDifference()} points");
                     }
                 }
 
                 //write.Close();
+
                 //read.Close();
                 //infile.Close();
-
+                //"C:/../../Desktop" + userInput + "txt"
             }// end of try
 
             catch (Exception e)
@@ -180,6 +182,7 @@ namespace Project_Two
                 Console.WriteLine(e.Message);
             }// end of catch
 
+            //ask user for file name and put it on their desktop, then i can concatenate the filename to the path that i know would work
 
             ////write to a file
             //FileStream outFile = new

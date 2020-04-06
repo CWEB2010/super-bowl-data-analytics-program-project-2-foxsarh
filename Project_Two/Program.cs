@@ -96,7 +96,6 @@ namespace Project_Two
                         writer.WriteLine($"1. The city = {superbowl.City}\n2. The State = {superbowl.State}\n3. The Stadium = {superbowl.Stadium}\n\n");
                     }
                 }
-                //writeGroupDataToFile(attendanceQuery, "state", writer);
 
                 /** Adapted from code originally by Leann Simonson **/
                 //Generate a list of players who won MVP more than once
@@ -105,6 +104,7 @@ namespace Project_Two
                                where MVPGroup.Count() > 1
                                orderby MVPGroup.Key // Order the list according to # of times a player was MVP
                                select MVPGroup; // Return the ordered list of MVPs in List format  
+                /** end of citation **/
 
                 formatting("MVP", writer);
                 foreach (var x in MVPCount)

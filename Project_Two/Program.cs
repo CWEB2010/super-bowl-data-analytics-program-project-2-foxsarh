@@ -81,9 +81,10 @@ namespace Project_Two
                 //$"\n4. City = {x.City}\n5. State = {x.State}\n6. Stadium = {x.Stadium}\n\n"));
 
                 //Generate a list of the state that hosted the most super bowls
+                int mostStates = superbowlList.GroupBy(x => x.State).OrderByDescending(x => x.Count()).First().Count();
                 var stateQuery = (from SB in superbowlList
                                   group SB by SB.State into stateGroup
-                                  where stateGroup.Count() > 1
+                                  where stateGroup.Count() == mostStates
                                   orderby stateGroup.Key descending
                                   select stateGroup).Take(1);
 
@@ -122,10 +123,12 @@ namespace Project_Two
                 writer.WriteLine("----------------");
                 writer.WriteLine(" Misc Fun Facts ");
                 writer.WriteLine("----------------");
+                
                 //Determine which coach lost the most superbowls
+                int mostCoachLosses = superbowlList.GroupBy(x => x.CoachLoser).OrderByDescending(x => x.Count()).First().Count();
                 var losingCoachQuery = (from SB in superbowlList
                                         group SB by SB.CoachLoser into losingCoachGroup
-                                        where losingCoachGroup.Count() > 1
+                                        where losingCoachGroup.Count() == mostCoachLosses
                                         orderby losingCoachGroup.Key descending
                                         select losingCoachGroup).Take(1);
 
@@ -135,10 +138,11 @@ namespace Project_Two
                     writer.WriteLine($"The coach who lost the most Super Bowls = {x.Key}");
                 }
 
-                //determine which coach won the most superbowls
+                //Determine which coach won the most superbowls
+                int mostCoachWins = superbowlList.GroupBy(x => x.CoachWinner).OrderByDescending(x => x.Count()).First().Count();
                 var winningCoachQuery = (from SB in superbowlList
                                          group SB by SB.CoachWinner into winningCoachGroup
-                                         where winningCoachGroup.Count() > 1
+                                         where winningCoachGroup.Count() == mostCoachWins
                                          orderby winningCoachGroup.Key descending
                                          select winningCoachGroup).Take(1);
 
@@ -192,7 +196,6 @@ namespace Project_Two
                         writer.WriteLine($"The Super Bowl with the greatest point difference:\n{sb.SuperBowlNumber} by {sb.pointDifference()} points");
                     }
                 }
-                //writeDataToFile(stateQuery.ToList(), "state", writer);
 
                 writer.Close();
                 outFile.Close();
@@ -255,7 +258,11 @@ namespace Project_Two
                 {
                     outFile.WriteLine(x.outputTopFive());
                 }
-            } 
+            }
+            else
+            {
+                Console.WriteLine("Oops! Something went wrong");
+            }
         }
         public static void writeGroupDataToFile(Dictionary<String, SuperBowl> data, string determinant, StreamWriter outFile)
         {

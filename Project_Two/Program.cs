@@ -9,10 +9,6 @@ namespace Project_Two
     {
         static void Main(string[] args)
         {
-            /**Your application should allow the end user to pass end a file path for output 
-            * or guide them through generating the file.
-            **/
-
             //Declarations//
             const string PATH = @"C:\Users\foxsarh\Documents\Super_Bowl_Project.csv";
 
@@ -61,8 +57,9 @@ namespace Project_Two
                 writer = new StreamWriter(outFile);
 
                 //Conclusion
-                Console.WriteLine("\nThank you for using the Super Bowl Database!");
-                Console.WriteLine("----------------------------------------------");
+                Console.WriteLine("\n------------------------------------------------");
+                Console.WriteLine("  Thank you for using the Super Bowl Database!  ");
+                Console.WriteLine("------------------------------------------------");
                 Console.WriteLine("Your file is stored at: " + filePath);
 
                 //Print winners to file
@@ -129,13 +126,13 @@ namespace Project_Two
                 var losingCoachQuery = (from SB in superbowlList
                                         group SB by SB.CoachLoser into losingCoachGroup
                                         where losingCoachGroup.Count() == mostCoachLosses
-                                        orderby losingCoachGroup.Key descending
-                                        select losingCoachGroup).Take(1);
+                                        //orderby losingCoachGroup.Key descending
+                                        select losingCoachGroup.Key).ToArray();
 
-                
-                foreach (var x in losingCoachQuery)
+                writer.WriteLine("\nThe Coaches Who Lost the Most Super Bowls:");
+                for (var x = 0; x < losingCoachQuery.Length; x++)
                 {
-                    writer.WriteLine($"The coach who lost the most Super Bowls = {x.Key}");
+                    writer.WriteLine($"{losingCoachQuery[x]}");
                 }
 
                 //Determine which coach won the most superbowls
@@ -148,7 +145,7 @@ namespace Project_Two
 
                 foreach (var x in winningCoachQuery)
                 {
-                    writer.WriteLine($"The coach who won the most super bowls = {x.Key}");
+                    writer.WriteLine($"\nThe coach who won the most super bowls = {x.Key}");
                 }
 
                 //Determine which team(s) won the most superbowls
@@ -205,21 +202,6 @@ namespace Project_Two
             {
                 Console.WriteLine(e.Message);
             }// end of catch
-
-            //ask user for file name and put it on their desktop, then i can concatenate the filename to the path that i know would work
-
-            ////write to a file
-            //FileStream outFile = new
-            //   FileStream("SomeText.txt", FileMode.Create,
-            //   FileAccess.Write);
-            //StreamWriter writer = new StreamWriter(outFile);
-            //Console.Write("Enter some text >> ");
-            //string text = Console.ReadLine();
-            //writer.WriteLine(text);
-            //// Error occurs if the next two statements are reversed
-            //writer.Close();
-            //outFile.Close();
-
         }// End of Main
 
 

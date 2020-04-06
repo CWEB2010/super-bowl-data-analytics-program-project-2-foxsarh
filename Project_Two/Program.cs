@@ -17,9 +17,9 @@ namespace Project_Two
             const string PATH = @"C:\Users\foxsarh\Documents\Super_Bowl_Project.csv";
 
             FileStream infile;
-            FileStream outfile;
+            FileStream outFile;
             StreamReader read;
-            StreamWriter write;
+            StreamWriter writer;
             string primer;
             string[] superBowlData;
 
@@ -56,8 +56,9 @@ namespace Project_Two
 
                 //Print Top Five to console
                 formatting("Top Five");
-                attendanceQuery.ToList<SuperBowl>().ForEach(x => Console.WriteLine($"1. Date = {x.Date}\n2. Winning Team = {x.Winner}\n3. Losing Team = {x.Loser}" +
-                $"\n4. City = {x.City}\n5. State = {x.State}\n6. Stadium = {x.Stadium}\n\n"));
+                outputData(attendanceQuery.ToList(), "attendance");
+                //attendanceQuery.ToList<SuperBowl>().ForEach(x => Console.WriteLine($"1. Date = {x.Date}\n2. Winning Team = {x.Winner}\n3. Losing Team = {x.Loser}" +
+                //$"\n4. City = {x.City}\n5. State = {x.State}\n6. Stadium = {x.Stadium}\n\n"));
 
                 //Generate a list of the state that hosted the most super bowls
                 var stateQuery = (from SB in superbowlList
@@ -147,6 +148,7 @@ namespace Project_Two
                                   //orderby loserGroup.Key descending
                                   select loserGroup).Take(2);
 
+                //Ouput which team lost the most supeprbowls 
                 Console.WriteLine("\nThe Teams Who Lost the Most Super Bowls:");
                 foreach (var x in losingTeam)
                 {
@@ -170,7 +172,21 @@ namespace Project_Two
                     }
                 }
 
-                //write.Close();
+                //Writing to a file --> SHOULD I USE A "USING" BLOCK??
+                string userName = Environment.UserName;
+                Console.Write("Please Enter the name of the text file: ");
+                string userInput = Console.ReadLine();
+                string filePath = $@"C:\Users\{userName}\Desktop\{userInput}.txt";
+
+                outFile = new FileStream(filePath, FileMode.Create, FileAccess.Write);
+                writer = new StreamWriter(outFile);
+
+                writeDataToFile(superbowlList, "allWinners", writer);
+                writeDataToFile(attendanceQuery.ToList(), "attendance", writer);
+                //writeDataToFile(stateQuery.ToList(), "state", writer);
+
+                writer.Close();
+                outFile.Close();
 
                 //read.Close();
                 //infile.Close();
@@ -211,11 +227,35 @@ namespace Project_Two
             }
             else if (determinant == "attendance")
             {
-
+                data.ToList<SuperBowl>().ForEach(x => Console.WriteLine($"1. Date = {x.Date}\n2. Winning Team = {x.Winner}\n3. Losing Team = {x.Loser}" +
+                $"\n4. City = {x.City}\n5. State = {x.State}\n6. Stadium = {x.Stadium}\n\n"));
             }
             else
             {
                 Console.WriteLine("Something went wrong");
+            }
+        }
+
+        public static void writeDataToFile(List<SuperBowl> data, string determinant, StreamWriter outFile)
+        {
+            if (determinant == "allWinners")
+            {
+                foreach (SuperBowl x in data)
+                {
+                    outFile.WriteLine(x.outputWinner());
+                }
+            } else if (determinant == "attendance")
+            {
+                foreach (SuperBowl x in data)
+                {
+                    outFile.WriteLine(x.outputTopFive());
+                }
+            } else if (determinant == "state")
+            {
+                foreach (SuperBowl x in data)
+                {
+                    outFile.WriteLine(x.outputState());
+                }
             }
         }
 
@@ -294,6 +334,11 @@ namespace Project_Two
         {
             return String.Format($"1. Date = {Date}\n2. Winning Team = {Winner}\n3. Losing Team = {Loser}" +
                 $"\n4. City = {City}\n5. State = {State}\n6. Stadium = {Stadium}\n\n");
+        }
+
+        public string outputState()
+        {
+            return String.Format($"1. The city = {City}\n2. The State = {State}\n3. The Stadium = {Stadium}\n\n");
         }
 
         public int pointDifference()

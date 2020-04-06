@@ -45,18 +45,38 @@ namespace Project_Two
                 read.Dispose();
                 infile.Dispose();
 
-                //Print winners to console
-                formatting("Winners");
-                outputData(superbowlList, "allWinners");
+                //Introduction
+                Console.WriteLine("-------------------------------------------");
+                Console.WriteLine("    Welcome to The Super Bowl Database!    ");
+                Console.WriteLine("-------------------------------------------");
+                Console.WriteLine("You may choose the name of the file you would like your database to be saved in.");
+                Console.WriteLine("It will be saved as a text file on your desktop\n");
+
+                //Writing to a file --> don't need a using block since I will be writing to this file multiple times throughout the program and not just once
+                string userName = Environment.UserName; //Grabs the username on the person's computer
+                Console.Write("Please Enter the name of the text file: ");
+                string userInput = Console.ReadLine();
+                string filePath = $@"C:\Users\{userName}\Desktop\{userInput}.txt";
+                outFile = new FileStream(filePath, FileMode.Create, FileAccess.Write);
+                writer = new StreamWriter(outFile);
+
+                //Conclusion
+                Console.WriteLine("\nThank you for using the Super Bowl Database!");
+                Console.WriteLine("----------------------------------------------");
+                Console.WriteLine("Your file is stored at: " + filePath);
+
+                //Print winners to file
+                formatting("Winners", writer);
+                writeDataToFile(superbowlList, "allWinners", writer);
 
                 //Generate a list of top 5 most attendance superbowls
                 var attendanceQuery = (from superbowl in superbowlList
                                        orderby superbowl.Attendance descending
                                        select superbowl).ToList<SuperBowl>().Take(5);
 
-                //Print Top Five to console
-                formatting("Top Five");
-                outputData(attendanceQuery.ToList(), "attendance");
+                //Print Top Five to file
+                formatting("Top Five", writer);
+                writeDataToFile(attendanceQuery.ToList(), "attendance", writer);
                 //attendanceQuery.ToList<SuperBowl>().ForEach(x => Console.WriteLine($"1. Date = {x.Date}\n2. Winning Team = {x.Winner}\n3. Losing Team = {x.Loser}" +
                 //$"\n4. City = {x.City}\n5. State = {x.State}\n6. Stadium = {x.Stadium}\n\n"));
 
@@ -67,14 +87,15 @@ namespace Project_Two
                                   orderby stateGroup.Key descending
                                   select stateGroup).Take(1);
 
-                formatting("State");
+                formatting("State", writer);
                 foreach (var x in stateQuery)
                 {
                     foreach (var superbowl in x)
                     {
-                        Console.WriteLine($"1. The city = {superbowl.City}\n2. The State = {superbowl.State}\n3. The Stadium = {superbowl.Stadium}\n\n");
+                        writer.WriteLine($"1. The city = {superbowl.City}\n2. The State = {superbowl.State}\n3. The Stadium = {superbowl.Stadium}\n\n");
                     }
                 }
+                //writeGroupDataToFile(attendanceQuery, "state", writer);
 
                 /** Adapted from code originally by Leann Simonson **/
                 //Generate a list of players who won MVP more than once
@@ -84,23 +105,23 @@ namespace Project_Two
                                orderby MVPGroup.Key // Order the list according to # of times a player was MVP
                                select MVPGroup; // Return the ordered list of MVPs in List format  
 
-                formatting("MVP");
+                formatting("MVP", writer);
                 foreach (var x in MVPCount)
                 {
-                    Console.WriteLine($"\nPlayer {x.Key} won MVP {x.Count()} times");
-                    Console.WriteLine("--------------------------------");
+                    writer.WriteLine($"\nPlayer {x.Key} won MVP {x.Count()} times");
+                    writer.WriteLine("--------------------------------");
 
                     foreach (var superbowl in x)
                     {
-                        Console.WriteLine($"Winning Team = {superbowl.Winner}\nLosing Team = {superbowl.Loser}\n");
+                        writer.WriteLine($"Winning Team = {superbowl.Winner}\nLosing Team = {superbowl.Loser}\n");
                     }
                     
                 }
-                Console.WriteLine(""); //formatting
+                writer.WriteLine(""); //formatting
 
-                Console.WriteLine("----------------");
-                Console.WriteLine(" Misc Fun Facts ");
-                Console.WriteLine("----------------");
+                writer.WriteLine("----------------");
+                writer.WriteLine(" Misc Fun Facts ");
+                writer.WriteLine("----------------");
                 //Determine which coach lost the most superbowls
                 var losingCoachQuery = (from SB in superbowlList
                                         group SB by SB.CoachLoser into losingCoachGroup
@@ -111,7 +132,7 @@ namespace Project_Two
                 
                 foreach (var x in losingCoachQuery)
                 {
-                    Console.WriteLine($"The coach who lost the most Super Bowls = {x.Key}");
+                    writer.WriteLine($"The coach who lost the most Super Bowls = {x.Key}");
                 }
 
                 //determine which coach won the most superbowls
@@ -123,7 +144,7 @@ namespace Project_Two
 
                 foreach (var x in winningCoachQuery)
                 {
-                    Console.WriteLine($"The coach who won the most super bowls = {x.Key}");
+                    writer.WriteLine($"The coach who won the most super bowls = {x.Key}");
                 }
 
                 //Determine which team(s) won the most superbowls
@@ -134,10 +155,10 @@ namespace Project_Two
                                    //orderby winnerGroup.Key descending
                                    select winnerGroup.Key).ToArray();
 
-                Console.WriteLine("\nThe Teams Who Won the Most Super Bowls:");
+                writer.WriteLine("\nThe Teams Who Won the Most Super Bowls:");
                 for (var x=0; x < winningTeam.Length; x++)
                 {
-                    Console.WriteLine($"{winningTeam[x]}");
+                    writer.WriteLine($"{winningTeam[x]}");
                 }
 
                 //Determine which team(s) lost the most superbowls
@@ -149,10 +170,10 @@ namespace Project_Two
                                   select loserGroup).Take(2);
 
                 //Ouput which team lost the most supeprbowls 
-                Console.WriteLine("\nThe Teams Who Lost the Most Super Bowls:");
+                writer.WriteLine("\nThe Teams Who Lost the Most Super Bowls:");
                 foreach (var x in losingTeam)
                 {
-                    Console.WriteLine($"{x.Key}");
+                    writer.WriteLine($"{x.Key}");
                 }
 
                 // DEBUGGING ----->> superbowlList.ForEach(x => Console.WriteLine(x.pointDifference()));
@@ -163,34 +184,18 @@ namespace Project_Two
                                      orderby pointsGroup.Key descending
                                      select pointsGroup).Take(1);
 
-                Console.WriteLine(""); //formatting 
+                writer.WriteLine(""); //formatting 
                 foreach (var x in greatestPoint)
                 {
                     foreach (var sb in x)
                     {
-                        Console.WriteLine($"The Super Bowl with the greatest point difference:\n{sb.SuperBowlNumber} by {sb.pointDifference()} points");
+                        writer.WriteLine($"The Super Bowl with the greatest point difference:\n{sb.SuperBowlNumber} by {sb.pointDifference()} points");
                     }
                 }
-
-                //Writing to a file --> SHOULD I USE A "USING" BLOCK??
-                string userName = Environment.UserName;
-                Console.Write("Please Enter the name of the text file: ");
-                string userInput = Console.ReadLine();
-                string filePath = $@"C:\Users\{userName}\Desktop\{userInput}.txt";
-
-                outFile = new FileStream(filePath, FileMode.Create, FileAccess.Write);
-                writer = new StreamWriter(outFile);
-
-                writeDataToFile(superbowlList, "allWinners", writer);
-                writeDataToFile(attendanceQuery.ToList(), "attendance", writer);
                 //writeDataToFile(stateQuery.ToList(), "state", writer);
 
                 writer.Close();
                 outFile.Close();
-
-                //read.Close();
-                //infile.Close();
-                //"C:/../../Desktop" + userInput + "txt"
             }// end of try
 
             catch (Exception e)
@@ -250,39 +255,43 @@ namespace Project_Two
                 {
                     outFile.WriteLine(x.outputTopFive());
                 }
-            } else if (determinant == "state")
+            } 
+        }
+        public static void writeGroupDataToFile(Dictionary<String, SuperBowl> data, string determinant, StreamWriter outFile)
+        {
+            if (determinant == "state")
             {
-                foreach (SuperBowl x in data)
+                foreach (KeyValuePair<String, SuperBowl> x in data)
                 {
-                    outFile.WriteLine(x.outputState());
+                    Console.WriteLine($"1. The city = { x.Value.City}\n2. The State = {x.Value.State}\n3. The Stadium = {x.Value.Stadium}\n\n");
                 }
             }
         }
 
-        public static void formatting(string header)
+        public static void formatting(string header, StreamWriter outfile)
         {
-            Console.WriteLine("------------------------------------------------------");
+            outfile.WriteLine("------------------------------------------------------");
             if (header == "Winners")
             {
-                Console.WriteLine("Below is a List of All Super Bowl Winners");
+                outfile.WriteLine("Below is a List of All Super Bowl Winners");
             } 
             
             else if (header == "Top Five")
             {
-                Console.WriteLine("Below is a List of The Top 5 Most Attended Superbowls");
+                outfile.WriteLine("Below is a List of The Top 5 Most Attended Superbowls");
             }
 
             else if (header == "State")
             {
-                Console.WriteLine("Below is the State that Hosted the Most Superbowls");
+                outfile.WriteLine("Below is the State that Hosted the Most Superbowls");
             }
 
             else if (header == "MVP")
             {
-                Console.WriteLine("Below are the Players Who Have Won MVP More Than Once");
+                outfile.WriteLine("Below are the Players Who Have Won MVP More Than Once");
             }
 
-            Console.WriteLine("------------------------------------------------------\n");
+            outfile.WriteLine("------------------------------------------------------\n");
         }
     }//End of Program Class
 

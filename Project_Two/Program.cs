@@ -196,6 +196,10 @@ namespace Project_Two
                     }
                 }
 
+                //Determine the average attendance of all super bowls?
+                double result = superbowlList.Select(x => x.Attendance).Average();
+                writer.WriteLine(String.Format("\nThe average attendance of all super bowls is: {0:0,0}", result));
+
                 writer.Close();
                 outFile.Close();
             }// end of try

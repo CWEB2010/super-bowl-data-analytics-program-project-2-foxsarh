@@ -88,9 +88,11 @@ namespace Project_Two
                 formatting("State", writer);
                 foreach (var x in stateQuery)
                 {
+                    writer.WriteLine($"{x.Key} hosted a total of {x.Count()} superbowls");
+
                     foreach (var superbowl in x)
                     {
-                        writer.WriteLine($"1. The city = {superbowl.City}\n2. The State = {superbowl.State}\n3. The Stadium = {superbowl.Stadium}\n\n");
+                        writer.WriteLine($"1. The city = {superbowl.City}\n2. The Stadium = {superbowl.Stadium}\n\n");
                     }
                 }
 
